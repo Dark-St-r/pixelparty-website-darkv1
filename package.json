@@ -1,0 +1,47 @@
+{
+  "name": "pixel",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "babelMacros": {
+    "twin": {
+      "preset": "styled-components"
+    }
+  },
+  "dependencies": {
+    "@headlessui/react": "^1.2.0",
+    "@heroicons/react": "^1.0.1",
+    "@tailwindcss/aspect-ratio": "^0.2.0",
+    "add": "^2.0.6",
+    "autoprefixer": "^10.2.5",
+    "axios": "^0.21.1",
+    "bn.js": "^5.2.0",
+    "framer-motion": "^4.1.16",
+    "lzutf8": "^0.6.0",
+    "near-api-js": "^0.41.0",
+    "next": "10.2.0",
+    "next-images": "^1.7.0",
+    "pg": "^8.6.0",
+    "react": "17.0.2",
+    "react-color": "^2.19.3",
+    "react-dom": "17.0.2",
+    "react-toastify": "^7.0.4",
+    "react-tooltip": "^4.2.19",
+    "recoil": "^0.3.0",
+    "styled-components": "^5.3.0",
+    "twin.macro": "^2.4.1",
+    "use-dencrypt-effect": "^1.0.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.3.2",
+    "@types/node": "^15.3.0",
+    "@types/react": "^17.0.5",
+    "postcss": "^8.2.15",
+    "tailwindcss": "^2.1.2",
+    "typescript": "^4.2.4"
+  }
+}
