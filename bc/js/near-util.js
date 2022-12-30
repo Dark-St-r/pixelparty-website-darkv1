@@ -5,7 +5,8 @@ import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import { setupSender } from "@near-wallet-selector/sender";
 import { setupHereWallet } from "@near-wallet-selector/here-wallet";
 import { setupDefaultWallets } from "@near-wallet-selector/default-wallets";
-import { providers, utils } from "near-api-js";
+import { providers, utils, Account } from "near-api-js";
+
 
 export class NearUtils {
 
@@ -107,15 +108,14 @@ export class NearUtils {
     }
 
     static async viewCall(method, args) {
-        const resp = await this.provider
-            .query({
-                request_type: "call_function",
-                account_id: "pixelparty.near",
-                method_name: method,
-                args_base64: btoa(JSON.stringify(args)),
-                finality: "optimistic",
-            });
-        return JSON.parse(Buffer.from(resp.result).toString());
+
+        const account = new Account({ provider: this.provider });
+        return await account.viewFunction(
+            "pixelparty.near",
+            method,
+            args
+        );
+
     }
 
 }
