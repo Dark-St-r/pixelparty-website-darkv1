@@ -8,39 +8,31 @@ import {
   framesOnSaleState,
   hoverState,
   introState,
-  roadmapState,
   historyState,
   sellState,
   yourFramesState,
 } from "../../utils/store";
 import { Drawboard } from "../../bc/js/drawboard";
 import {
-  Coins,
   Container,
-  Eggs,
   Frames,
   Logo,
   NavigationButtons,
   Profile,
   SidebarContainer,
 } from "./Sidebar.styled";
-import ReactTooltip from "react-tooltip";
+import { setupModal } from "@near-wallet-selector/modal-ui";
+import "@near-wallet-selector/modal-ui/styles.css";
+
 
 const Sidebar = () => {
   const [isBuyModal, setBuyModal] = useRecoilState(buyState);
   const [sellModal, setSellModal] = useRecoilState(sellState);
-  //const [SignedIn, setSignedIn] = useState(false);
   const [SignedIn, setSignedIn] = useState({
-    logged: false,
-    pixeltoken: 0,
-    egg_common: 0,
-    egg_rare: 0,
-    egg_epic: 0,
-    egg_legendary: 0,
+    logged: false
   });
   const [drawboardModal, setDrawboard] = useRecoilState(drawboardState);
   const [introModal, setIntroModal] = useRecoilState(introState);
-  const [roadmapModal, setRoadmapModal] = useRecoilState(roadmapState);
   const [hoverFrame, setHoverFrame] = useRecoilState(hoverState);
   const [cancelModal, setCancelModal] = useRecoilState(cancelState);
   const [historyModal, setHistoryModal] = useRecoilState(historyState);
@@ -48,8 +40,17 @@ const Sidebar = () => {
   const [yourFrames, setYourFrames] = useRecoilState(yourFramesState);
   const [framesOnSale, setFramesOnSale] = useRecoilState(framesOnSaleState);
 
-  useEffect(() => {
-    NearUtils.initContract(setSignedIn, setYourFrames);
+  const [loginModal, setLoginModal] = useState(null);
+  useEffect(async () => {
+    await NearUtils.initContract(setSignedIn, setYourFrames);
+
+
+    const modal = setupModal(NearUtils.selectorInstance, {
+      contractId: "pixelparty.near"
+    });
+
+    setLoginModal(modal);
+
   }, []);
 
   function openDrawboard(frameId) {
@@ -57,20 +58,16 @@ const Sidebar = () => {
     setDrawboard({ frameId: frameId, showModal: true });
   }
   function login() {
-    NearUtils.login();
+    loginModal.show();
   }
 
-  function logout() {
+  async function logout() {
     NearUtils.logout();
   }
 
   function pad(num, size) {
     var s = "00000" + num;
     return s.substr(s.length - size);
-  }
-
-  function convertPixeltoken(num) {
-    return (num / 1000000).toFixed(2);
   }
 
   function sortFramesOnSale() {
@@ -147,14 +144,6 @@ const Sidebar = () => {
               </div>
             )}
             {!SignedIn.logged && (
-              // <button
-              //   href="#"
-              //   className="flex items-center px-2 py-2 text-sm font-medium text-center text-gray-700 rounded-md hover:text-gray-500 hover:bg-theme-dark group"
-              //   style={{ margin: "auto" }}
-              //   onClick={login}
-              // >
-              //   Login
-              // </button>
               <div className="flex items-center justify-center w-full">
                 <button
                   type="button"
@@ -220,28 +209,6 @@ const Sidebar = () => {
                 </svg>
                 Intro / Rules
               </a>
-
-              {/* <a
-                href="#"
-                className="flex items-center px-2 py-2 font-serif text-sm font-medium text-gray-400 transition duration-200 rounded-md hover:text-gray-500 bg-theme-darker group"
-                onClick={() => {
-                  setRoadmapModal(true);
-                }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  className="w-5 h-5 mr-3 text-gray-400"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M18 13V5a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2h3l3 3 3-3h3a2 2 0 002-2zM5 7a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm1 3a1 1 0 100 2h3a1 1 0 100-2H6z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Roadmap / Changelog
-              </a> */}
               <a
                 href="#"
                 onClick={() => {

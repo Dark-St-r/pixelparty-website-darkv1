@@ -18,7 +18,6 @@ import HistoryModal from "../components/common/HistoryModal";
 import CancelModal from "../components/common/CancelModal";
 import IntroModal from "../components/common/IntroModal";
 import Modal from "../components/common/Modal";
-import RoadmapModal from "../components/common/RoadmapModal";
 import SellModal from "../components/common/SellModal";
 import Spinner from "../components/common/Spinner";
 import Sidebar from "../components/sidebar/Sidebar";
@@ -30,7 +29,6 @@ import {
   hoverState,
   introState,
   pixelpartyState,
-  roadmapState,
   sellState,
   spinnerState,
   yourFramesState,
@@ -62,7 +60,6 @@ export default function Home() {
   const [introModal, setIntroModal] = useRecoilState(introState);
   const [hoverFrame, setHoverFrame] = useRecoilState(hoverState);
   const [cancelModal, setCancelModal] = useRecoilState(cancelState);
-  const [roadmapModal, setRoadmapModal] = useRecoilState(roadmapState);
   const [pixelpartyBoard, setPixelpartyBoard] = useRecoilState(pixelpartyState);
   const [framesOnSale, setFramesOnSale] = useRecoilState(framesOnSaleState);
   const [yourFrames, setYourFrames] = useRecoilState(yourFramesState);
@@ -204,7 +201,6 @@ export default function Home() {
       {sellModal.showModal && <SellModal />}
       {/* {introModal && <IntroModal />} */}
       <IntroModal />
-      <RoadmapModal />
       <HistoryModal />
       {cancelModal.showModal && <CancelModal />}
       {spinnerModal.showModal && <Spinner />}
