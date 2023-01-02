@@ -1,11 +1,16 @@
 import BN from 'bn.js';
-import { connect, Contract, keyStores, WalletConnection, utils } from 'near-api-js'
+import { setupWalletSelector } from "@near-wallet-selector/core";
+import { setupNearWallet } from "@near-wallet-selector/near-wallet";
+import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
+import { setupSender } from "@near-wallet-selector/sender";
+import { setupHereWallet } from "@near-wallet-selector/here-wallet";
+import { setupDefaultWallets } from "@near-wallet-selector/default-wallets";
+import { providers, utils, Account } from "near-api-js";
+
 
 export class NearUtils {
-    static nearConfig = null;
-    // Initialize contract & set global variables
 
-    static pixContract = null;
+    // Initialize contract & set global variables
     static walletConnection = null;
     static accountId = "";
     static initDone = false;
@@ -15,105 +20,102 @@ export class NearUtils {
     static DEFAULT_FUNC_CALL_GAS = new BN('50000000000000');
     static HEAVY_FUNC_CALL_GAS = new BN('200000000000000');
     static CROSS_FUNC_CALL_GAS = new BN('200000000000000');
-
-    static initVars() {
-        if (NearUtils.NETWORK == 'mainnet') {
-            NearUtils.nearConfig = {
-
-                networkId: 'mainnet',
-                nodeUrl: 'https://rpc.mainnet.near.org',
-                contractName: 'pixelparty.near',
-                walletUrl: 'https://wallet.near.org',
-                helperUrl: 'https://helper.mainnet.near.org',
-                explorerUrl: 'https://explorer.mainnet.near.org',
-            };
-
-        } else {
-            NearUtils.nearConfig = {
-
-                networkId: 'default',
-                nodeUrl: 'https://rpc.testnet.near.org',
-                contractName: 'p500.testnet',
-                walletUrl: 'https://wallet.testnet.near.org',
-                helperUrl: 'https://helper.testnet.near.org',
-            };
-        }
-    }
+    static selectorInstance = null;
+    static provider = null;
 
     static async initContract(setSignedIn, setYourFrames) {
-        if (NearUtils.initDone) {
+        if (this.initDone) {
             return;
         }
-        NearUtils.initDone = true;
-        NearUtils.initVars();
-        // Initialize connection to the NEAR testnet
-        const near = await connect(Object.assign({ deps: { keyStore: new keyStores.BrowserLocalStorageKeyStore() } }, NearUtils.nearConfig));
+        this.initDone = true;
 
-        // Initializing Wallet based Account. It can work with NEAR testnet wallet that
-        // is hosted at https://wallet.testnet.near.org
-        let walletCon = new WalletConnection(near);
-        NearUtils.walletConnection = walletCon;
+        this.selectorInstance = await setupWalletSelector({
+            network: "mainnet",
+            modules: [
+                ...(await setupDefaultWallets()),
+                setupNearWallet(),
+                setupMyNearWallet(),
+                setupSender(),
+                setupHereWallet(),
 
-        // Getting the Account ID. If still unauthorized, it's just empty string
-        NearUtils.accountId = walletCon.getAccountId();
-        //console.log(NearUtils.accountId);
-        // Initializing our contract APIs by contract name and configuration
-        NearUtils.pixContract = await new Contract(NearUtils.walletConnection.account(), NearUtils.nearConfig.contractName, {
-            // View methods are read only. They don't modify the state, but usually return some value.
-            viewMethods: ['getHistory'],
-            // Change methods can modify the state. But you don't receive the returned value when called.
-            changeMethods: ['editFrame', 'buyFrame', 'offerFrame', 'cancelOffer', 'changeMessage', 'changeCoauthor', 'editFrameimage'],
+            ],
         });
 
-        if (walletCon.isSignedIn()) {
+        const { network } = this.selectorInstance.options;
+        this.provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
 
-            const pxb = await (await near.account()).viewFunction("pixeltoken.near", "custom_balance_of", { account_id: walletCon.getAccountId() });
-            setSignedIn({ logged: true, pixeltoken: pxb.pixeltoken, egg_common: pxb.egg_common, egg_rare: pxb.egg_rare, egg_epic: pxb.egg_epic, egg_legendary: pxb.egg_legendary });
+
+        if (this.selectorInstance.isSignedIn()) {
+            this.walletConnection = await this.selectorInstance.wallet();
+            this.accountId = (await this.walletConnection.getAccounts())[0].accountId;
+            setSignedIn({ logged: true });
         }
     }
 
     static logout() {
-        NearUtils.walletConnection.signOut()
+        this.walletConnection.signOut()
         // reload page
         window.location.replace(window.location.origin + window.location.pathname)
     }
 
-    static login() {
-        NearUtils.walletConnection.requestSignIn(NearUtils.nearConfig.contractName, "Near Pixelparty");
-    }
-
     static async getHistory() {
-        const resp = await NearUtils.walletConnection.account().viewFunction("pixelparty.near", "getHistory");
-        return resp;
+        return await this.viewCall('getHistory');
     }
 
     static buyFrame(frameId, nearAmount) {
         const amount = utils.format.parseNearAmount(nearAmount.toString());
-        NearUtils.walletConnection.account().functionCall(NearUtils.nearConfig.contractName, 'buyFrame', { frameId: frameId }, NearUtils.CROSS_FUNC_CALL_GAS, amount);
+        NearUtils.sendTransaction('buyFrame', { frameId: frameId }, amount);
     }
 
     static async offerFrame(frameId, nearAmount) {
         nearAmount = Number(nearAmount) + 1;
-        //const amount = utils.format.parseNearAmount(nearAmount.toString());
-        await NearUtils.walletConnection.account().functionCall(NearUtils.nearConfig.contractName, 'offerFrame', { frameId: frameId, price: nearAmount }, NearUtils.DEFAULT_FUNC_CALL_GAS);
+        await NearUtils.sendTransaction('offerFrame', { frameId: frameId, price: nearAmount });
     }
 
     static async cancelOffer(frameId) {
-        await NearUtils.walletConnection.account().functionCall(NearUtils.nearConfig.contractName, 'cancelOffer', { frameId: frameId }, NearUtils.DEFAULT_FUNC_CALL_GAS);
+        await NearUtils.sendTransaction('cancelOffer', { frameId: frameId });
     }
 
     static async changeMessage(frameId) {
-        await NearUtils.walletConnection.account().functionCall(NearUtils.nearConfig.contractName, 'changeMessage', { frameId: frameId }, NearUtils.DEFAULT_FUNC_CALL_GAS);
+        await NearUtils.sendTransaction('changeMessage', { frameId: frameId });
     }
 
     static async changeCoauthor(frameId) {
-        await NearUtils.walletConnection.account().functionCall(NearUtils.nearConfig.contractName, 'changeCoauthor', { frameId: frameId }, NearUtils.DEFAULT_FUNC_CALL_GAS);
+        await NearUtils.sendTransaction('changeCoauthor', { frameId: frameId });
     }
 
-    static async getFrameDataView() {
+    // static async getFrameDataView() {
+    //todo: remove server call for this and use client view call
+    //     const resp = await NearUtils.walletConnection.account().viewFunction("pixelparty.near", "load_frames", { start: 0, end: 50 });
+    //     console.log(resp);
+    //     return resp;
+    // }
 
-        const resp = await NearUtils.walletConnection.account().viewFunction("pixelparty.near", "load_frames", { start: 0, end: 50 });
-        console.log(resp);
-        return resp;
+    static async sendTransaction(method, args, deposit) {
+        await NearUtils.walletConnection.signAndSendTransaction({
+            actions: [
+                {
+                    type: "FunctionCall",
+                    params: {
+                        methodName: method,
+                        args: args,
+                        gas: NearUtils.CROSS_FUNC_CALL_GAS,
+                        deposit: deposit,
+                    },
+                },
+            ],
+        });
     }
+
+    static async viewCall(method, args) {
+
+        const account = new Account({ provider: this.provider });
+        return await account.viewFunction(
+            "pixelparty.near",
+            method,
+            args
+        );
+
+    }
+
 }
