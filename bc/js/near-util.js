@@ -76,20 +76,13 @@ export class NearUtils {
         await NearUtils.sendTransaction('cancelOffer', { frameId: frameId });
     }
 
-    static async changeMessage(frameId) {
-        await NearUtils.sendTransaction('changeMessage', { frameId: frameId });
+    static async editFrameimage(frameId, compressedData) {
+        await NearUtils.sendTransaction('editFrameimage', { frameId: frameId, frameData: compressedData });
     }
 
-    static async changeCoauthor(frameId) {
-        await NearUtils.sendTransaction('changeCoauthor', { frameId: frameId });
+    static async editFrame(frameId, compressedData, message, coauthor) {
+        await NearUtils.sendTransaction('editFrame', { frameId: frameId, frameData: compressedData, message: message || "", coauthor: coauthor || "" });
     }
-
-    // static async getFrameDataView() {
-    //todo: remove server call for this and use client view call
-    //     const resp = await NearUtils.walletConnection.account().viewFunction("pixelparty.near", "load_frames", { start: 0, end: 50 });
-    //     console.log(resp);
-    //     return resp;
-    // }
 
     static async sendTransaction(method, args, deposit) {
         await NearUtils.walletConnection.signAndSendTransaction({
