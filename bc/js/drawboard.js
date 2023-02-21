@@ -107,10 +107,11 @@ export class Drawboard {
         let frameId = Drawboard.activeFrame;
         let boardData = JSON.stringify(Drawboard.board.toString().split(',').map(function(t) { return parseInt(t) }));
         let compressedData = StorageManager.compress(boardData);
+
         if (coauthor == NearUtils.accountId) {
-            await NearUtils.pixContract.editFrameimage({ "frameId": frameId, "frameData": compressedData });
+            await NearUtils.editFrameimage(frameId, compressedData);
         } else {
-            await NearUtils.pixContract.editFrame({ "frameId": frameId, "frameData": compressedData, "message": message || "", "coauthor": coauthor || "" });
+            await NearUtils.editFrame(frameId, compressedData, message || "", coauthor || "");
         }
     }
 
