@@ -10,7 +10,7 @@ export default function getConfig() {
                 walletUrl: 'https://wallet.near.org',
                 helperUrl: 'https://helper.mainnet.near.org',
                 explorerUrl: 'https://explorer.mainnet.near.org',
-                CONTRACT_ID: `pixeltoken.near`
+                CONTRACT_ID: `pixeltoken.chloe.near`
             };
         case 'testnet':
         default:
