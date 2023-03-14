@@ -16,7 +16,7 @@ export class NearUtils {
     static initDone = false;
     static userFrames = [];
     static framesOnSale = [];
-    static NETWORK = process.env.NEAR_NETWORK || 'mainnet'
+    static NETWORK = process.env.NEAR_NETWORK || 'testnet'
     static DEFAULT_FUNC_CALL_GAS = new BN('50000000000000');
     static HEAVY_FUNC_CALL_GAS = new BN('200000000000000');
     static CROSS_FUNC_CALL_GAS = new BN('200000000000000');
@@ -30,7 +30,7 @@ export class NearUtils {
         this.initDone = true;
 
         this.selectorInstance = await setupWalletSelector({
-            network: "mainnet",
+            network: "testnet",
             modules: [
                 ...(await setupDefaultWallets()),
                 setupNearWallet(),
