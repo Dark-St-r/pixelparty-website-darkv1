@@ -46,7 +46,7 @@ const Sidebar = () => {
 
 
     const modal = setupModal(NearUtils.selectorInstance, {
-      contractId: "pixelparty.near"
+      contractId: "pixelparty.chloe.testnet"
     });
 
     setLoginModal(modal);
