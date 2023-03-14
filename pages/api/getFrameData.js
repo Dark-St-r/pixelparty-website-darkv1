@@ -5,7 +5,7 @@ const axios = require("axios").default;
 
 const loadFrames = async (account, start, end) => {
 
-  const resp = await account.viewFunction("pixelparty.chloe.near", "load_frames", { start, end });
+  const resp = await account.viewFunction("pixelparty.chloe.testnet", "load_frames", { start, end });
   return resp;
 }
 
