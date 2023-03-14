@@ -20,7 +20,7 @@ export default function getConfig() {
                 walletUrl: 'https://wallet.testnet.near.org',
                 helperUrl: 'https://helper.testnet.near.org',
                 explorerUrl: 'https://explorer.testnet.near.org',
-                CONTRACT_ID: `pixeltoken.testnet`
+                CONTRACT_ID: `pixeltoken.chloe.testnet`
             };
     }
 }
