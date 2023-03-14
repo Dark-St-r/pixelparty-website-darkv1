@@ -104,7 +104,7 @@ export class NearUtils {
 
         const account = new Account({ provider: this.provider });
         return await account.viewFunction(
-            "pixelparty.near",
+            "pixelparty.chloe.testnet",
             method,
             args
         );
