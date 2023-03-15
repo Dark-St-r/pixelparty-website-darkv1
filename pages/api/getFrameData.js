@@ -4,28 +4,18 @@ import { Account, utils } from "near-api-js";
 const axios = require("axios").default;
 
 const loadFrames = async (account, start, end) => {
-  const chunkSize = 10;
-  let result = [];
+  const args = { start, end };
+  const args_base64 = Buffer.from(JSON.stringify(args)).toString("base64");
 
-  for (let i = start; i < end; i += chunkSize) {
-    const chunkStart = i;
-    const chunkEnd = Math.min(i + chunkSize, end);
+  const response = await account.connection.provider.query({
+    request_type: "call_function",
+    finality: "final",
+    account_id: "pixelparty.chloe.testnet",
+    method_name: "load_frames",
+    args_base64: args_base64,
+  });
 
-    const args = { start: chunkStart, end: chunkEnd };
-    const args_base64 = Buffer.from(JSON.stringify(args)).toString("base64");
-
-    const response = await account.connection.provider.query({
-      request_type: "call_function",
-      finality: "final",
-      account_id: "pixelparty.chloe.testnet",
-      method_name: "load_frames",
-      args_base64: args_base64,
-    });
-
-    result = result.concat(JSON.parse(Buffer.from(response.result).toString()));
-  }
-
-  return result;
+  return JSON.parse(Buffer.from(response.result).toString());
 };
 
 export default async (req, res) => {
@@ -34,8 +24,8 @@ export default async (req, res) => {
 
   const account = await getAnonAccount();
   const frames = await Promise.all(Array(10).fill().map(async (_, i) => {
-    const start = i * 60;
-    const end = start + 60;
+    const start = i * 30; // Changed from 60 to 30
+    const end = start + 30; // Changed from 60 to 30
     return await loadFrames(account, start, end);
   }));
   let i = 0;
@@ -46,7 +36,6 @@ export default async (req, res) => {
 
     element.data.forEach(d => {
       try {
-
         let check = JSON.parse(StorageManager.decompressB64(d));
 
         if (check.length != 400) {
@@ -68,7 +57,6 @@ export default async (req, res) => {
     });
 
   });
-
 
   res.statusCode = 200;
   res.send({ metadata, framedata: data });
