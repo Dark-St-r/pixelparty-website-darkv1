@@ -3,8 +3,6 @@ import { getAnonAccount } from "../../utils/blockchain";
 import { Account, utils } from "near-api-js";
 const axios = require("axios").default;
 
-import { utils } from "near-api-js";
-
 const loadFrames = async (account, start, end) => {
   const args = { start, end };
   const args_base64 = Buffer.from(JSON.stringify(args)).toString("base64");
