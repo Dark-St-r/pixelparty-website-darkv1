@@ -4,7 +4,7 @@ const axios = require("axios").default;
 
 
 const loadFrames = async (account, start, end) => {
-  const resp = await account.viewFunction({
+  const resp = await account.view({
     contractId: "pixelparty.chloe.testnet",
     methodName: "load_frames",
     args: { start, end },
