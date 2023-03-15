@@ -1,12 +1,10 @@
 import { StorageManager } from "../../bc/js/localstorage";
 import { getAnonAccount } from "../../utils/blockchain";
+import { Account, utils } from "near-api-js";
 const axios = require("axios").default;
 
-
-import { utils } from "near-api-js";
-
 const loadFrames = async (account, start, end) => {
-  const result = await account.viewFunction("pixelparty.chloe.testnet", "load_frames", { start, end });
+  const result = await account.viewFunction("pixelparty.chloe.testnet", "load_frames", { start: start.toString(), end: end.toString() });
   return result;
 };
 
