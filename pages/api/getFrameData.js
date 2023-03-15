@@ -4,10 +4,15 @@ const axios = require("axios").default;
 
 
 const loadFrames = async (account, start, end) => {
-
-  const resp = await account.viewFunction("pixelparty.chloe.testnet", "load_frames", { start, end });
+  const resp = await account.viewFunction({
+    contractId: "pixelparty.chloe.testnet",
+    methodName: "load_frames",
+    args: { start, end },
+    gas: '50000000000000'
+  });
   return resp;
 }
+
 
 export default async (req, res) => {
   const metadata = [];
