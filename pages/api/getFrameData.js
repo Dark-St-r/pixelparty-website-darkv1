@@ -3,9 +3,21 @@ import { getAnonAccount } from "../../utils/blockchain";
 import { Account, utils } from "near-api-js";
 const axios = require("axios").default;
 
+import { utils } from "near-api-js";
+
 const loadFrames = async (account, start, end) => {
-  const result = await account.viewFunction("pixelparty.chloe.testnet", "load_frames", { start: start.toString(), end: end.toString() }, { gas: '50000000000000' });
-  return result;
+  const args = { start, end };
+  const args_base64 = Buffer.from(JSON.stringify(args)).toString("base64");
+
+  const response = await account.connection.provider.query({
+    request_type: "call_function",
+    finality: "final",
+    account_id: "pixelparty.chloe.testnet",
+    method_name: "load_frames",
+    args_base64: args_base64,
+  });
+
+  return JSON.parse(Buffer.from(response.result).toString());
 };
 
 export default async (req, res) => {
