@@ -4,14 +4,18 @@ const axios = require("axios").default;
 
 
 const loadFrames = async (account, start, end) => {
-  const resp = await account.view({
-    contractId: "pixelparty.chloe.testnet",
-    methodName: "load_frames",
-    args: { start, end },
-    gas: '50000000000000'
+  const provider = account.connection.provider;
+  const result = await provider.query({
+    request_type: 'call_function',
+    finality: 'final',
+    account_id: "pixelparty.chloe.testnet",
+    method_name: "load_frames",
+    args_base64: Buffer.from(JSON.stringify({ start, end })).toString('base64'),
   });
-  return resp;
-}
+
+  return result;
+};
+
 
 
 export default async (req, res) => {
