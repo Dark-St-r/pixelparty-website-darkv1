@@ -3,20 +3,12 @@ import { getAnonAccount } from "../../utils/blockchain";
 const axios = require("axios").default;
 
 
-const loadFrames = async (account, start, end) => {
-  const provider = account.connection.provider;
-  const result = await provider.query({
-    request_type: 'call_function',
-    finality: 'final',
-    account_id: "pixelparty.chloe.testnet",
-    method_name: "load_frames",
-    args_base64: Buffer.from(JSON.stringify({ start, end })).toString('base64'),
-  });
+import { utils } from "near-api-js";
 
+const loadFrames = async (account, start, end) => {
+  const result = await account.viewFunction("pixelparty.chloe.testnet", "load_frames", { start, end });
   return result;
 };
-
-
 
 export default async (req, res) => {
   const metadata = [];
