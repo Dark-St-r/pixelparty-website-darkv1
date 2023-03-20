@@ -4,18 +4,7 @@ import { Account, utils } from "near-api-js";
 const axios = require("axios").default;
 
 const loadFrames = async (account, start, end) => {
-  const args = { start, end };
-  const args_base64 = Buffer.from(JSON.stringify(args)).toString("base64");
-
-  const response = await account.connection.provider.query({
-    request_type: "call_function",
-    finality: "final",
-    account_id: "pixelparty.chloe.testnet",
-    method_name: "load_frames",
-    args_base64: args_base64,
-  });
-
-  return JSON.parse(Buffer.from(response.result).toString());
+  return await account.viewFunction("pixelparty.chloe.testnet", "load_frames", { start, end });
 };
 
 export default async (req, res) => {
