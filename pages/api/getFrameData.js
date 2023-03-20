@@ -23,7 +23,7 @@ export default async (req, res) => {
   const data = [];
 
   const account = await getAnonAccount();
-  const frames = await Promise.all(Array(15).fill().map(async (_, i) => {
+  const frames = await Promise.all(Array(10).fill().map(async (_, i) => {
     const start = i * 30;
     const end = start + 30;
     return await loadFrames(account, start, end);
