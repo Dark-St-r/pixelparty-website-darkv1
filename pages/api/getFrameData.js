@@ -4,7 +4,8 @@ import { Account, utils } from "near-api-js";
 const axios = require("axios").default;
 
 const loadFrames = async (account, start, end) => {
-  return await account.viewFunction("pixelparty.chloe.testnet", "load_frames", { start, end });
+  const resp = await account.viewFunction("pixelparty.chloe.testnet", "load_frames", { start, end });
+  return resp;
 };
 
 export default async (req, res) => {
