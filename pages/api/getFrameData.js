@@ -12,19 +12,27 @@ const loadFrames = async (account, start, end) => {
   return resp;
 };
 
+const getFramesInChunks = async (account, start_frame, end_frame, chunk_size) => {
+  let all_frames = [];
+  for (let i = start_frame; i < end_frame; i += chunk_size) {
+    let chunk_start = i;
+    let chunk_end = Math.min(i + chunk_size, end_frame);
+    const frames = await loadFrames(account, chunk_start, chunk_end);
+    all_frames = all_frames.concat(frames);
+  }
+  return all_frames;
+};
 
 export default async (req, res) => {
   const metadata = [];
   const data = [];
 
   const account = await getAnonAccount();
-  const frames = await Promise.all(Array(10).fill().map(async (_, i) => {
-    const start = i * 60;
-    const end = start + 60;
-    return await loadFrames(account, start, end);
-  }));
+  const start_frame = 0;
+  const end_frame = 600;
+  const chunk_size = 60; // Adjust the chunk size as needed
+  const frames = await getFramesInChunks(account, start_frame, end_frame, chunk_size);
 
-  let i = 0;
   frames.forEach(element => {
     element.metadata.forEach(m => {
       metadata.push(m);
