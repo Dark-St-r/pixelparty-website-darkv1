@@ -23,11 +23,11 @@ export default async (req, res) => {
   const data = [];
 
   const account = await getAnonAccount();
-const frames = await Promise.all(Array(20).fill().map(async (_, i) => {
-    const start = i * 30;
-    const end = start + 30;
+  const frames = await Promise.all(Array(10).fill().map(async (_, i) => {
+    const start = i * 60;
+    const end = start + 60;
     return await loadFrames(account, start, end);
-}));
+  }));
 
   frames.forEach(element => {
     if (element.metadata) {
