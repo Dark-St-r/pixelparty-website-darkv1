@@ -3,9 +3,15 @@ import { getAnonAccount } from "../../utils/blockchain";
 const axios = require("axios").default;
 
 const loadFrames = async (account, start, end) => {
-  const resp = await account.viewFunction("pixelparty.chloe.testnet", "load_frames", { start, end });
+  const resp = await account.viewFunction({
+    contractId: "pixelparty.chloe.testnet",
+    methodName: "load_frames",
+    args: { start, end },
+    gas: "300000000000000", // Increase the gas limit
+  });
   return resp;
 };
+
 
 export default async (req, res) => {
   const metadata = [];
