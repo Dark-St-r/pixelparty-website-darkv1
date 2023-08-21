@@ -1,7 +1,7 @@
 import * as nearApi from 'near-api-js';
 
 export default function getConfig() {
-    const env = process.env.NEXT_PUBLIC_NEAR_NETWORK_ID || "mainnet";
+    const env = process.env.NEXT_PUBLIC_NEAR_NETWORK_ID || "testnet";
     switch (env) {
         case 'mainnet':
             return {
@@ -20,7 +20,7 @@ export default function getConfig() {
                 walletUrl: 'https://wallet.testnet.near.org',
                 helperUrl: 'https://helper.testnet.near.org',
                 explorerUrl: 'https://explorer.testnet.near.org',
-                CONTRACT_ID: `pixeltoken.testnet`
+                CONTRACT_ID: `pixelparty.chloe.testnet`
             };
     }
 }

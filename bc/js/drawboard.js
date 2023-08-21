@@ -66,7 +66,11 @@ export class Drawboard {
 
         ctx2.fillStyle = hexColor;
         ctx2.fillRect((cx) * 2, (cy) * 2, 2, 2);
-    }
+
+  // Call autoSave function
+        Drawboard.autoSave();
+}
+
 
     static getMousePos(canvas, evt) {
         var rect = canvas.getBoundingClientRect();
@@ -114,6 +118,38 @@ export class Drawboard {
             await NearUtils.editFrame(frameId, compressedData, message || "", coauthor || "");
         }
     }
+    
+    static temporarySave() {
+    // Save the drawboard data temporarily in the browser's local storage
+        localStorage.setItem("drawboardData", JSON.stringify(Drawboard.board));
+}
+
+    static temporaryLoad() {
+    // Retrieve the drawboard data from the browser's local storage
+        const drawboardData = localStorage.getItem("drawboardData");
+
+        if (drawboardData) {
+        Drawboard.board = JSON.parse(drawboardData);
+    }
+}
+
+    static clearTemporaryData() {
+    // Clear the temporary drawboard data from the browser's local storage
+        localStorage.removeItem("drawboardData");
+}
+    
+    static autoSave() {
+    // Retrieve the drawboard data
+        const drawboardData = Drawboard.getDrawboardData();
+
+    // Save the drawboard data temporarily
+        Drawboard.temporarySave(drawboardData);
+
+    // Update the drawboard based on the temporary saved data
+        Drawboard.updateDrawboard(drawboardData);
+}
+
+
 
     static startDraw(event, canvas) {
         Drawboard.drawMode = true;

@@ -73,7 +73,7 @@ export default function Home() {
   };
 
   function filterContractOwner(owner) {
-    if (owner == "pixelparty.near") {
+    if (owner == "pixelparty.chloe.testnet") {
       return "";
     } else {
       return owner;
